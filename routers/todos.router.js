@@ -1,13 +1,24 @@
 import express from 'express';
+import joi from 'joi';
 import Todo from '../schemas/todo.schema.js';
 
 
 const router = express.Router();
 
+const createdTodoSchema = joi.object({
+    value: joi.string().min(1).max(50).required(),
+})
+
+
 // 할일 등록 API //
 router.post('/todos', async (req, res, next) => {
+
+    try{
     // 1. 클라이언트로 부터 받아온 value 데이터를 가져온다.
-    const {value} = req.body;
+
+    const validation = await createdTodoSchema.validateAsync(req.body);
+
+    const {value} = validation;
 
     // 1.1 만약, 클라이언트가 value 데이터를 잘못 전달 했을 때, 
     // 클라이언트에게 메시지를 전달.
@@ -30,6 +41,9 @@ router.post('/todos', async (req, res, next) => {
 
     // 5. 해야 할 일을 클라이언트에게 반환한다.
     return res.status(201).json({todo: todo});
+ }catch (error) {
+    next(error);
+ }
 })
 
 // 해야 할 일 목록 API //
@@ -44,7 +58,7 @@ router.get('/todos', async(req, res, next) => {
 // 해야할 일 순서 변경, 완료 / 해제 API //
 router.patch('/todos/:todoId', async(req, res, next) => {
     const { todoId } = req.params;
-    const  {order, done} = req.body;
+    const  {order, done, value} = req.body;
 
     // 현재 나의 order 가 무엇인지 알아야 한다.
     const currentTodo = await Todo.findById(todoId).exec();
@@ -64,12 +78,16 @@ router.patch('/todos/:todoId', async(req, res, next) => {
     if(done !== undefined) {
         currentTodo.doneAt = done ? new Date() : null;
     }
+    if(value) {
+        currentTodo.value = value;
+    }
 
     await currentTodo.save();
 
     return res.status(200).json({})
 });
 
+// 할 일 삭제 API //
 router.delete('/todos/:todoId', async(req, res, next) => {
     const {todoId} = req.params;
 
@@ -78,7 +96,12 @@ router.delete('/todos/:todoId', async(req, res, next) => {
         return res.status(404).json({errorMessage: '존재하지 않는 해야할 일 정보입니다.'});
     }
 
+    await Todo.deleteOne({_id: todoId})
+
+    return res.status(200).json({});
 })
+
+// 할 일 내용 변경하기 API //
 
 
 export default router;

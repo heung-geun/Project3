@@ -1,6 +1,7 @@
 import express from 'express';
 import connect from './schemas/index.js';
 import todosRouter from './routers/todos.router.js';
+import errorHandlerMiddleware from './middlewares/error-handler.middleware.js';
 
 
 const app = express();
@@ -13,6 +14,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./assets'));
 
+app.use((req, res, next) => {
+  console.log('Request URL:', req.originalUrl, ' - ', new Date());
+  next();
+});
+
 const router = express.Router();
 
 router.get('/', (req, res) => {
@@ -20,6 +26,8 @@ router.get('/', (req, res) => {
 });
 
 app.use('/api', [router, todosRouter]);
+
+app.use(errorHandlerMiddleware);
 
 app.listen(PORT, () => {
   console.log(PORT, '포트로 서버가 열렸어요!');
