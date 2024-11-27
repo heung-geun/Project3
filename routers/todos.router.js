@@ -20,11 +20,9 @@ router.post("/todos", async (req, res, next) => {
     // 1.1 만약, 클라이언트가 value 데이터를 잘못 전달 했을 때,
     // 클라이언트에게 메시지를 전달.
     if (!value) {
-      return res
-        .status(400)
-        .json({
-          errorMessage: "해야할 일(value) 데이터가 잘못입력 되었습니다."
-        });
+      return res.status(400).json({
+        errorMessage: "해야할 일(value) 데이터가 잘못입력 되었습니다."
+      });
     }
 
     // 2. 해당하는 마지막 order 데이터를 조회한다.
