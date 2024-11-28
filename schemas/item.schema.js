@@ -3,9 +3,13 @@
 import mongoose from "mongoose";
 
 const ItemSchema = new mongoose.Schema({
+  code: {
+    type: Number,
+    required: false 
+  },
   item_name: {
     type: String,
-    required: true // value 필드는 필수 요소입니다.
+    required: true
   },
   item_health: {
     type: Number,
@@ -20,8 +24,8 @@ const ItemSchema = new mongoose.Schema({
     required: false 
   },
   item_price: {
-    type: Number, // doneAt 필드는 Date 타입을 가집니다.
-    required: true // doneAt 필드는 필수 요소가 아닙니다.
+    type: Number,
+    required: true 
   }
 });
 

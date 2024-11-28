@@ -5,25 +5,31 @@ import Item from "../schemas/item.schema.js";
 const router = express.Router();
 
 const createdItemSchema = joi.object({
-  value: joi.string().min(1).max(50).required()
+  code: joi.number().min(0),
+  item_name: joi.string().min(1).max(50).required(),
+  item_health: joi.number().min(0),
+  item_power: joi.number().min(0),
+  item_defensive: joi.number().min(0),
+  item_price: joi.number().min(0).required()
 });
 
 // 할일 등록 API //
 router.post("/items", async (req, res, next) => {
+  console.log('코드가 라우터에는 들어오나?', code)
   try {
     // 1. 클라이언트로 부터 받아온 value 데이터를 가져온다.
 
     const validation = await createdItemSchema.validateAsync(req.body);
 
-    const { item_name } = validation;
+    const { code, item_name, item_health, item_power, item_defensive, item_price } = validation;
 
     // 1.1 만약, 클라이언트가 value 데이터를 잘못 전달 했을 때,
     // 클라이언트에게 메시지를 전달.
-    if (!item_name) {
-      return res.status(400).json({
-        errorMessage: "해야할 일(value) 데이터가 잘못입력 되었습니다."
-      });
-    }
+    // if (!item_name) {
+    //   return res.status(400).json({
+    //     errorMessage: "아이탬 이름이 잘못입력 되었습니다."
+    //   });
+    // }
 
     // 2. 해당하는 마지막 order 데이터를 조회한다.
     // sort = 정렬한다. -> 어떤 컬럼을?
@@ -31,10 +37,10 @@ router.post("/items", async (req, res, next) => {
 
     // 3. 만약 존재한다면 현재 해야 할 일을 +1 하고,
     // order 데이터가 존재하지 않다면, 1로 할당한다.
-    const code = itemMaxCode ? itemMaxCode.code + 1 : 1;
+    let codes = itemMaxCode ? itemMaxCode.code + 1 : 1;
 
     // 4. 해야 할 일 등록
-    const item = new Todo({ item_name, code });
+    const item = new Item({ codes, item_name, item_health, item_power, item_defensive, item_price });
 
     await item.save();
 
@@ -57,7 +63,7 @@ router.get("/items", async (req, res, next) => {
 // 해야할 일 순서 변경, 완료 / 해제 API //
 router.patch("/items/:itemId", async (req, res, next) => {
   const { itemId } = req.params;
-  const { code, done, item_name } = req.body;
+  const { code, done, item_name,  } = req.body;
 
   // 현재 나의 order 가 무엇인지 알아야 한다.
   const currentItem = await Item.findById(itemId).exec();
