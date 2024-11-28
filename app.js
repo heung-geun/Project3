@@ -1,6 +1,6 @@
 import express from "express";
 import connect from "./schemas/index.js";
-import todosRouter from "./routers/todos.router.js";
+import itemsRouter from "./routers/item.router.js";
 import errorHandlerMiddleware from "./middlewares/error-handler.middleware.js";
 
 const app = express();
@@ -24,10 +24,11 @@ router.get("/", (req, res) => {
   return res.json({ message: "Hi!" });
 });
 
-app.use("/api", [router, todosRouter]);
+app.use("/api", [router, itemsRouter]);
 
 app.use(errorHandlerMiddleware);
 
 app.listen(PORT, () => {
   console.log(PORT, "포트로 서버가 열렸어요!");
 });
+
