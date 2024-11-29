@@ -5,7 +5,6 @@ import Item from "../schemas/item.schema.js";
 const router = express.Router();
 
 const createdItemSchema = joi.object({
-  code: joi.number().min(0),
   item_name: joi.string().min(1).max(50).required(),
   item_health: joi.number().min(0),
   item_power: joi.number().min(0),
@@ -15,13 +14,16 @@ const createdItemSchema = joi.object({
 
 // 할일 등록 API //
 router.post("/items", async (req, res, next) => {
-  console.log('코드가 라우터에는 들어오나?', code)
+  let apple = "사과";
+  console.log(apple);
+  // console.log('코드가 라우터에는 들어오나?', code)
+  // console.log('코드가 라우터에는 들어오나?', itemMaxCode.code)
   try {
     // 1. 클라이언트로 부터 받아온 value 데이터를 가져온다.
 
     const validation = await createdItemSchema.validateAsync(req.body);
 
-    const { code, item_name, item_health, item_power, item_defensive, item_price } = validation;
+    const { item_name, item_health, item_power, item_defensive, item_price } = validation;
 
     // 1.1 만약, 클라이언트가 value 데이터를 잘못 전달 했을 때,
     // 클라이언트에게 메시지를 전달.
@@ -37,10 +39,10 @@ router.post("/items", async (req, res, next) => {
 
     // 3. 만약 존재한다면 현재 해야 할 일을 +1 하고,
     // order 데이터가 존재하지 않다면, 1로 할당한다.
-    let codes = itemMaxCode ? itemMaxCode.code + 1 : 1;
+    const code = itemMaxCode.code ? itemMaxCode.code + 1 : 1;
 
     // 4. 해야 할 일 등록
-    const item = new Item({ codes, item_name, item_health, item_power, item_defensive, item_price });
+    const item = new Item({ code, item_name, item_health, item_power, item_defensive, item_price });
 
     await item.save();
 
@@ -112,3 +114,4 @@ router.delete("/items/:itemId", async (req, res, next) => {
 // 할 일 내용 변경하기 API //
 
 export default router;
+
