@@ -2,6 +2,7 @@ import express from "express";
 import joi from "joi";
 import Item from "../schemas/item.schema.js";
 
+
 const router = express.Router();
 
 const createdItemSchema = joi.object({
@@ -14,10 +15,6 @@ const createdItemSchema = joi.object({
 
 // 할일 등록 API //
 router.post("/items", async (req, res, next) => {
-  let apple = "사과";
-  console.log(apple);
-  // console.log('코드가 라우터에는 들어오나?', code)
-  // console.log('코드가 라우터에는 들어오나?', itemMaxCode.code)
   try {
     // 1. 클라이언트로 부터 받아온 value 데이터를 가져온다.
 
@@ -65,7 +62,7 @@ router.get("/items", async (req, res, next) => {
 // 해야할 일 순서 변경, 완료 / 해제 API //
 router.patch("/items/:itemId", async (req, res, next) => {
   const { itemId } = req.params;
-  const { code, done, item_name,  } = req.body;
+  const { code, item_name, } = req.body;
 
   // 현재 나의 order 가 무엇인지 알아야 한다.
   const currentItem = await Item.findById(itemId).exec();
@@ -83,13 +80,10 @@ router.patch("/items/:itemId", async (req, res, next) => {
     }
     currentItem.code = code;
   }
-  if (done !== undefined) {
-    currentItem.doneAt = done ? new Date() : null;
-  }
+ 
   if (item_name) {
     currentItem.item_name = item_name;
   }
-
   await currentItem.save();
 
   return res.status(200).json({});

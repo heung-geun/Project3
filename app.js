@@ -1,5 +1,5 @@
 import express from "express";
-import connect from "./schemas/index.js";
+import { connect, userConnect } from "./schemas/index.js";
 import itemsRouter from "./routers/item.router.js";
 import errorHandlerMiddleware from "./middlewares/error-handler.middleware.js";
 
@@ -7,6 +7,7 @@ const app = express();
 const PORT = 3000;
 
 connect();
+userConnect();
 
 // Express에서 req.body에 접근하여 body 데이터를 사용할 수 있도록 설정합니다.
 app.use(express.json());
@@ -20,11 +21,13 @@ app.use((req, res, next) => {
 
 const router = express.Router();
 
+const UserRouter = express.Router()
+
 router.get("/", (req, res) => {
   return res.json({ message: "Hi!" });
 });
 
-app.use("/api", [router, itemsRouter]);
+app.use("/api", [router, UserRouter, itemsRouter]);
 
 app.use(errorHandlerMiddleware);
 
